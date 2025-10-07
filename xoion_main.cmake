@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------------------------------
-# Holon Build System - Core Script
+# Xoion Build System - Core Script
 #
-# This file is the main entry point for the Holon module-based build system.
+# This file is the main entry point for the Xoion module-based build system.
 # It handles:
 #   - Initialization of the module system
 #   - Registry definition (local and git-based)
@@ -15,15 +15,15 @@
 #   - Lazy module loading with caching
 # ------------------------------------------------------------------------------------------
 
-include(${CMAKE_CURRENT_LIST_DIR}/holon_logout.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/holon_utils.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/xoion_logout.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/xoion_utils.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/reduced_toml_parser.cmake)
 
-set(holon_registries "")
+set(xoion_registries "")
 
-# Initializes holon system state. Currently prints all cache variables.
-function(holon_init)
-    message(STATUS holon_init)
+# Initializes xoion system state. Currently prints all cache variables.
+function(xoion_init)
+    message(STATUS xoion_init)
     get_cmake_property(all_cache_vars VARIABLES)
     foreach(var ${all_cache_vars})
         message(STATUS "${var} ${${var}}")
@@ -31,7 +31,7 @@ function(holon_init)
 endfunction()
 
 # Prints all current CMake cache variable names.
-function(holon_struct)
+function(xoion_struct)
     get_cmake_property(all_cache_vars VARIABLES)
     foreach(var ${all_cache_vars})
         message(STATUS ${var})
@@ -39,40 +39,40 @@ function(holon_struct)
 endfunction()
 
 # Registers a Git-based registry with a given name and path prefix.
-function(holon_add_git_registry name path_prefix)
+function(xoion_add_git_registry name path_prefix)
     args_default(group_name "all" 0 ${ARGN})
-    get_global(holon_registries_keys)
+    get_global(xoion_registries_keys)
 
-    if("${name}" IN_LIST holon_registries_keys)
+    if("${name}" IN_LIST xoion_registries_keys)
         message(FATAL_ERROR "A module with the name '${name}' already exists.")
     endif()
 
-    list(APPEND holon_registries_keys ${name})
-    set_global(holon_registries_keys ${holon_registries_keys})
+    list(APPEND xoion_registries_keys ${name})
+    set_global(xoion_registries_keys ${xoion_registries_keys})
 
-    set_globalval(holon_registries_items_${name}_type "git")
-    set_globalval(holon_registries_items_${name}_path_prefix ${path_prefix})
-    set_globalval(holon_registries_items_${name}_group_name ${group_name})
+    set_globalval(xoion_registries_items_${name}_type "git")
+    set_globalval(xoion_registries_items_${name}_path_prefix ${path_prefix})
+    set_globalval(xoion_registries_items_${name}_group_name ${group_name})
 endfunction()
 
 # Registers a local registry with a given name and local path.
-function(holon_add_local_registry name path)
-    get_global(holon_registries_keys)
+function(xoion_add_local_registry name path)
+    get_global(xoion_registries_keys)
 
-    if("${name}" IN_LIST holon_registries_keys)
+    if("${name}" IN_LIST xoion_registries_keys)
         message(FATAL_ERROR "A module with the name '${name}' already exists.")
     endif()
 
-    list(APPEND holon_registries_keys ${name})
-    set_global(holon_registries_keys)
+    list(APPEND xoion_registries_keys ${name})
+    set_global(xoion_registries_keys)
 
-    set_globalval(holon_registries_items_${name}_type "local")
-    set_globalval(holon_registries_items_${name}_path ${path})
+    set_globalval(xoion_registries_items_${name}_type "local")
+    set_globalval(xoion_registries_items_${name}_path ${path})
 endfunction()
 
 # Adds include directories to the global list from specified paths.
-function(holon_add_includes)
-    get_global(holon_include_directories)
+function(xoion_add_includes)
+    get_global(xoion_include_directories)
     args_default(inc_dirs "inc" 0 ${ARGN})
     args_default(root_dir "${CMAKE_CURRENT_LIST_DIR}" 1 ${ARGN})
 
@@ -83,15 +83,15 @@ function(holon_add_includes)
             set(inc_path "${root_dir}/${inc_path}")
         endif()
         if(EXISTS "${inc_path}" AND IS_DIRECTORY ${inc_path})
-            list(APPEND holon_include_directories "${inc_path}")
+            list(APPEND xoion_include_directories "${inc_path}")
         endif()
     endforeach()
 
-    set_global(holon_include_directories)
+    set_global(xoion_include_directories)
 endfunction()
 
 # Adds files to a global list by matching formats in a given directory.
-function(holon__add_files_by_format target_global_list formats_default)
+function(xoion__add_files_by_format target_global_list formats_default)
     get_global(${target_global_list})
     args_default(formats ${formats_default} 0 ${ARGN})
     args_default(root_dir "${CMAKE_CURRENT_LIST_DIR}" 1 ${ARGN})
@@ -109,22 +109,22 @@ function(holon__add_files_by_format target_global_list formats_default)
 endfunction()
 
 # Adds source files (default patterns: src/*.c, src/*.cpp).
-function(holon_add_sources)
-    holon__add_files_by_format(holon_source_files "src/*.c,src/*.cpp" ${ARGN})
+function(xoion_add_sources)
+    xoion__add_files_by_format(xoion_source_files "src/*.c,src/*.cpp" ${ARGN})
 endfunction()
 
 # Adds static libraries (default patterns: lib/*.a, lib/*.lib).
-function(holon_add_libraries_static)
-    holon__add_files_by_format(holon_libraries_static "lib/*.a,lib/*.lib" ${ARGN})
+function(xoion_add_libraries_static)
+    xoion__add_files_by_format(xoion_libraries_static "lib/*.a,lib/*.lib" ${ARGN})
 endfunction()
 
 # Adds dynamic libraries (default patterns: dll/*.so, dll/*.dll).
-function(holon_add_libraries_dynamic)
-    holon__add_files_by_format(holon_libraries_dynamic "dll/*.so,dll/*.dll" ${ARGN})
+function(xoion_add_libraries_dynamic)
+    xoion__add_files_by_format(xoion_libraries_dynamic "dll/*.so,dll/*.dll" ${ARGN})
 endfunction()
 
 # Loads module configuration from TOML or CMake and processes includes, sources, and dependencies.
-function(holon_load_module_config module_path)
+function(xoion_load_module_config module_path)
     set(module_toml "${module_path}/module.toml")
     set(module_file "${module_path}/module.cmake")
 
@@ -133,8 +133,8 @@ function(holon_load_module_config module_path)
     endif()
 
     if(NOT EXISTS "${module_toml}")
-        holon_add_includes(${module_path}/inc)
-        holon_add_sources(${module_path}/src/*.c,${module_path}/src/*.cpp)
+        xoion_add_includes(${module_path}/inc)
+        xoion_add_sources(${module_path}/src/*.c,${module_path}/src/*.cpp)
         return()
     endif()
 
@@ -143,9 +143,9 @@ function(holon_load_module_config module_path)
         return()
     endif()
 
-    holon_toml_content_check(${toml_content})
-    holon_strip_toml_comments(${toml_content} toml_content)
-    holon_parse_reduced_toml(${toml_content} sections)
+    xoion_toml_content_check(${toml_content})
+    xoion_strip_toml_comments(${toml_content} toml_content)
+    xoion_parse_reduced_toml(${toml_content} sections)
 
     foreach(sec_idx RANGE 0 ${sections_last_idx})
         list(GET sections_names ${sec_idx} section_name)
@@ -158,19 +158,19 @@ function(holon_load_module_config module_path)
                 set(variable_value ${sections_vars_${sec_idx}_values_${var_idx}})
                 if(${variable_name} STREQUAL "includes")
                     foreach(value ${variable_value})
-                        holon_add_includes(${value} ${module_path})
+                        xoion_add_includes(${value} ${module_path})
                     endforeach()
                 elseif(${variable_name} STREQUAL "sources")
                     foreach(value ${variable_value})
-                        holon_add_sources(${value} ${module_path})
+                        xoion_add_sources(${value} ${module_path})
                     endforeach()
                 elseif(${variable_name} STREQUAL "libraries_static")
                     foreach(value ${variable_value})
-                        holon_add_libraries_static(${value} ${module_path})
+                        xoion_add_libraries_static(${value} ${module_path})
                     endforeach()
                 elseif(${variable_name} STREQUAL "libraries_dynamic")
                     foreach(value ${variable_value})
-                        holon_add_libraries_dynamic(${value} ${module_path})
+                        xoion_add_libraries_dynamic(${value} ${module_path})
                     endforeach()
                 endif()
             endforeach()
@@ -182,14 +182,14 @@ function(holon_load_module_config module_path)
                 list(GET target_pair 0 repo)
                 list(GET target_pair 1 module)
                 set(version ${variable_value})
-                holon_require_module(${repo} ${module} ${version})
+                xoion_require_module(${repo} ${module} ${version})
             endforeach()
         endif()
     endforeach()
 endfunction()
 
 # Loads registry definitions from a TOML or CMake file.
-function(holon_load_registries_config registries_file)
+function(xoion_load_registries_config registries_file)
     get_filename_component(FILE_EXT "${registries_file}" EXT)
 
     if(FILE_EXT STREQUAL ".cmake")
@@ -204,9 +204,9 @@ function(holon_load_registries_config registries_file)
         return()
     endif()
 
-    holon_toml_content_check(${toml_content})
-    holon_strip_toml_comments(${toml_content} toml_content)
-    holon_parse_reduced_toml(${toml_content} sections)
+    xoion_toml_content_check(${toml_content})
+    xoion_strip_toml_comments(${toml_content} toml_content)
+    xoion_parse_reduced_toml(${toml_content} sections)
 
     foreach(sec_idx RANGE 0 ${sections_last_idx})
         list(GET sections_names ${sec_idx} section_name)
@@ -217,7 +217,7 @@ function(holon_load_registries_config registries_file)
             foreach(var_idx RANGE 0 ${section_variables_last_idx})
                 list(GET section_variables_names ${var_idx} variable_name)
                 set(variable_value ${sections_vars_${sec_idx}_values_${var_idx}})
-                holon_add_local_registry(${variable_name} ${variable_value})
+                xoion_add_local_registry(${variable_name} ${variable_value})
             endforeach()
             continue()
         endif()
@@ -233,7 +233,7 @@ function(holon_load_registries_config registries_file)
             foreach(var_idx RANGE 0 ${section_variables_last_idx})
                 list(GET section_variables_names ${var_idx} variable_name)
                 set(variable_value ${sections_vars_${sec_idx}_values_${var_idx}})
-                holon_add_git_registry(${variable_name} ${variable_value} ${group_name})
+                xoion_add_git_registry(${variable_name} ${variable_value} ${group_name})
             endforeach()
             continue()
         endif()
@@ -241,40 +241,40 @@ function(holon_load_registries_config registries_file)
 endfunction()
 
 # Declares a dependency on a module from a given registry and loads it if not already loaded.
-function(holon_require_module registry module)
+function(xoion_require_module registry module)
     args_default(version "*" 0 ${ARGN})
-    get_global(holon_registries_keys)
-    get_global(holon_loaded_keys)
+    get_global(xoion_registries_keys)
+    get_global(xoion_loaded_keys)
 
     set(module_id_string "${registry}:${module}")
 
-    if(${module_id_string} IN_LIST holon_loaded_keys)
+    if(${module_id_string} IN_LIST xoion_loaded_keys)
         message(STATUS "${module_id_string} already loaded...")
         return()
     else()
         message(STATUS "${module_id_string} loading...")
-        list(APPEND holon_loaded_keys ${module_id_string})
-        set_global(holon_loaded_keys)
+        list(APPEND xoion_loaded_keys ${module_id_string})
+        set_global(xoion_loaded_keys)
     endif()
 
-    if(NOT "${registry}" IN_LIST holon_registries_keys)
+    if(NOT "${registry}" IN_LIST xoion_registries_keys)
         message(FATAL_ERROR "Registry '${registry}' not exists.")
     endif()
 
-    get_globalval(holon_registries_items_${registry}_type registry_type)
+    get_globalval(xoion_registries_items_${registry}_type registry_type)
 
     if(registry_type STREQUAL "local")
-        holon_require_module_local(${registry} ${module} ${version})
+        xoion_require_module_local(${registry} ${module} ${version})
     elseif(registry_type STREQUAL "git")
-        holon_require_module_git(${registry} ${module} ${version})
+        xoion_require_module_git(${registry} ${module} ${version})
     else()
         message(FATAL_ERROR "Unknown registry type: ${registry_type}")
     endif()
 endfunction()
 
 # Loads a module from a local registry.
-function(holon_require_module_local registry module version)
-    get_globalval(holon_registries_items_${registry}_path registry_path)
+function(xoion_require_module_local registry module version)
+    get_globalval(xoion_registries_items_${registry}_path registry_path)
 
     if(NOT registry_path MATCHES "^/")
         set(registry_path "${CMAKE_SOURCE_DIR}/${registry_path}")
@@ -290,11 +290,11 @@ function(holon_require_module_local registry module version)
         message(STATUS "Local module - version '${version}' is ignored.")
     endif()
 
-    holon_load_module_config(${module_path})
+    xoion_load_module_config(${module_path})
 endfunction()
 
 # Verifies or checks out specific commit SHA in a git module.
-function(holon_git_module_check_commit module_path sha_ref)
+function(xoion_git_module_check_commit module_path sha_ref)
     if(sha_ref STREQUAL "*")
         return()
     endif()
@@ -347,9 +347,9 @@ function(holon_git_module_check_commit module_path sha_ref)
 endfunction()
 
 # Loads a module from a git registry, optionally checking out to a specific version.
-function(holon_require_module_git registry_name module version)
-    get_globalval(holon_registries_items_${registry_name}_path_prefix registry_path_prefix)
-    get_globalval(holon_registries_items_${registry_name}_group_name registry_group_name)
+function(xoion_require_module_git registry_name module version)
+    get_globalval(xoion_registries_items_${registry_name}_path_prefix registry_path_prefix)
+    get_globalval(xoion_registries_items_${registry_name}_group_name registry_group_name)
 
     set(module_remote_path "${registry_path_prefix}/${module}")
     set(module_group_path "${CMAKE_SOURCE_DIR}/modules/${registry_group_name}")
@@ -369,24 +369,24 @@ function(holon_require_module_git registry_name module version)
         message(STATUS "${registry_name}:${module} local copy exists. Skipping clone.")
     endif()
 
-    holon_git_module_check_commit(${module_local_path} ${version})
-    holon_load_module_config(${module_local_path})
+    xoion_git_module_check_commit(${module_local_path} ${version})
+    xoion_load_module_config(${module_local_path})
 endfunction()
 
 # Returns all globally loaded sources, libraries and includes to the caller.
-function(holon_get_loaded)
+function(xoion_get_loaded)
     args_default(do_logout "no_logout" 0 ${ARGN})
-    get_global(holon_include_directories)
-    get_global(holon_source_files)
-    get_global(holon_libraries_static)
-    get_global(holon_libraries_dynamic)
+    get_global(xoion_include_directories)
+    get_global(xoion_source_files)
+    get_global(xoion_libraries_static)
+    get_global(xoion_libraries_dynamic)
 
-    set(holon_include_directories ${holon_include_directories} PARENT_SCOPE)
-    set(holon_source_files ${holon_source_files} PARENT_SCOPE)
-    set(holon_libraries_static ${holon_libraries_static} PARENT_SCOPE)
-    set(holon_libraries_dynamic ${holon_libraries_dynamic} PARENT_SCOPE)
+    set(xoion_include_directories ${xoion_include_directories} PARENT_SCOPE)
+    set(xoion_source_files ${xoion_source_files} PARENT_SCOPE)
+    set(xoion_libraries_static ${xoion_libraries_static} PARENT_SCOPE)
+    set(xoion_libraries_dynamic ${xoion_libraries_dynamic} PARENT_SCOPE)
 
     if(do_logout STREQUAL "logout")
-        holon_logout_loaded()
+        xoion_logout_loaded()
     endif()
 endfunction()

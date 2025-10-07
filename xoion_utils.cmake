@@ -1,5 +1,5 @@
 # ==============================================================================
-# Holon Utilities - Global Variable & Argument Helpers for CMake
+# Xoion Utilities - Global Variable & Argument Helpers for CMake
 #
 # Provides helper functions for setting and retrieving global properties,
 # as well as default argument resolution in macro/function calls.

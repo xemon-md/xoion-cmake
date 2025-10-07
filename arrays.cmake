@@ -1,5 +1,5 @@
 #------------------------------------------------------------------------------
-# Holon Build System - Internal Array Utilities
+# Xoion Build System - Internal Array Utilities
 #
 # This file provides internal array manipulation helpers.
 #------------------------------------------------------------------------------

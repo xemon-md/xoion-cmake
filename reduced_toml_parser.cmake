@@ -1,5 +1,5 @@
 # ==============================================================================
-# Holon Utilities - Lightweight TOML Parser for CMake
+# Xoion Utilities - Lightweight TOML Parser for CMake
 #
 # Provides basic parsing for simplified TOML content, supporting section
 # detection, key-value extraction, array handling, and comment stripping.
@@ -10,7 +10,7 @@
 
 # Extracts section headers and corresponding content blocks from TOML text.
 # Results are returned in indexed variables with the given return_prefix.
-function(holon_parse_reduced_toml_sections_raw content return_prefix)
+function(xoion_parse_reduced_toml_sections_raw content return_prefix)
     set(return_names "${return_prefix}_names")
     set(return_last_idx "${return_prefix}_last_idx")
     set(return_contents "${return_prefix}_contents")
@@ -67,7 +67,7 @@ endfunction()
 
 # Removes comments from TOML input, ignoring '#' inside quoted strings.
 # Returns the cleaned content to the output variable.
-function(holon_strip_toml_comments input output_var)
+function(xoion_strip_toml_comments input output_var)
     set(clean_lines "")
     string(REPLACE "\r" "" input "${input}")
     string(REPLACE "\n" ";" lines "${input}")
@@ -114,7 +114,7 @@ endfunction()
 
 
 # Parses a TOML value: number, quoted string, or array. Outputs cleaned value.
-function(holon_parse_toml_value input output_var)
+function(xoion_parse_toml_value input output_var)
     if("${input}" MATCHES "^[0-9]+$")
         set(${output_var} "${input}" PARENT_SCOPE)
         return()
@@ -150,7 +150,7 @@ endfunction()
 
 # Extracts key-value pairs from a section of TOML content.
 # Returns indexed variable names and values with the given prefix.
-function(holon_parse_reduced_toml_variables_raw content return_prefix)
+function(xoion_parse_reduced_toml_variables_raw content return_prefix)
     set(return_names "${return_prefix}_names")
     set(return_last_idx "${return_prefix}_last_idx")
     set(return_contents "${return_prefix}_contents")
@@ -196,8 +196,8 @@ endfunction()
 
 # Parses complete TOML content with sections and variables.
 # Results are returned using the given return_prefix.
-function(holon_parse_reduced_toml content retrun_prefix)
-    holon_parse_reduced_toml_sections_raw(${content} sections)
+function(xoion_parse_reduced_toml content retrun_prefix)
+    xoion_parse_reduced_toml_sections_raw(${content} sections)
 
     set("${retrun_prefix}_last_idx" ${sections_last_idx} PARENT_SCOPE)
     set("${retrun_prefix}_names" ${sections_names} PARENT_SCOPE)
@@ -210,7 +210,7 @@ function(holon_parse_reduced_toml content retrun_prefix)
             continue()
         endif()
 
-        holon_parse_reduced_toml_variables_raw(${section_content} section_variables)
+        xoion_parse_reduced_toml_variables_raw(${section_content} section_variables)
 
         set("${retrun_prefix}_vars_${sec_idx}_last_idx" ${section_variables_last_idx} PARENT_SCOPE)
         set("${retrun_prefix}_vars_${sec_idx}_names" ${section_variables_names} PARENT_SCOPE)
@@ -218,7 +218,7 @@ function(holon_parse_reduced_toml content retrun_prefix)
         foreach(var_idx RANGE 0 ${section_variables_last_idx})
             list(GET section_variables_names ${var_idx} variable_name)
             set(variable_content ${section_variables_contents_${var_idx}})
-            holon_parse_toml_value(${variable_content} variable_content)
+            xoion_parse_toml_value(${variable_content} variable_content)
             set("${retrun_prefix}_vars_${sec_idx}_values_${var_idx}" ${variable_content} PARENT_SCOPE)
         endforeach()
     endforeach()
@@ -227,9 +227,9 @@ endfunction()
 
 
 # Runs a full parse and optionally prints parsed structure for debug.
-function(holon_toml_content_check toml_content)
-    holon_strip_toml_comments(${toml_content} toml_content)
-    holon_parse_reduced_toml(${toml_content} sections)
+function(xoion_toml_content_check toml_content)
+    xoion_strip_toml_comments(${toml_content} toml_content)
+    xoion_parse_reduced_toml(${toml_content} sections)
 
     foreach(sec_idx RANGE 0 ${sections_last_idx})
         list(GET sections_names ${sec_idx} section_name)

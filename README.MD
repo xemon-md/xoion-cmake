@@ -1,26 +1,26 @@
-# Holon
+# Xoion
 
-Holon CMake is a lightweight modular layer for CMake.
+Xoion CMake is a lightweight modular layer for CMake.
 It helps organize projects into reusable modules with clear dependencies, using TOML-based configuration files.
 
-Holon CMake avoids direct script inclusion and encourages separation between build logic and module structure.
+Xoion CMake avoids direct script inclusion and encourages separation between build logic and module structure.
 It’s simple to integrate and designed for clarity, portability, and composability.
 
 ## How to Start
 
-1. Include Holon in your CMake project (simply copy the contents of this repository into a folder inside your project):
+1. Include Xoion in your CMake project (simply copy the contents of this repository into a folder inside your project):
 
    ```cmake
-   include(cfg/holon_cmake/holon_main.cmake)
+   include(cfg/xoion_cmake/xoion_main.cmake)
 
-   holon_load_registries_config("${CMAKE_SOURCE_DIR}/cfg/registries.toml")
-   holon_logout_registries()
+   xoion_load_registries_config("${CMAKE_SOURCE_DIR}/cfg/registries.toml")
+   xoion_logout_registries()
 
-   holon_require_module("local" "main")
-   holon_get_loaded(logout)
+   xoion_require_module("local" "main")
+   xoion_get_loaded(logout)
 
-   add_executable(${MAIN_TARGET} ${holon_source_files})
-   target_include_directories(${MAIN_TARGET} PRIVATE ${holon_include_directories})
+   add_executable(${MAIN_TARGET} ${xoion_source_files})
+   target_include_directories(${MAIN_TARGET} PRIVATE ${xoion_include_directories})
    ```
 
 2. Create a module directory, e.g. `src/init/main/`, with:
@@ -53,7 +53,7 @@ It’s simple to integrate and designed for clarity, portability, and composabil
 
 ## Module Structure
 
-A Holon module is a folder that contains:
+A Xoion module is a folder that contains:
 
 - `src/` — implementation source files
 - `inc/` — exported headers
@@ -104,11 +104,11 @@ Registries act as namespaces that map to local folders or Git repositories.
 
 ## Internal Architecture
 
-Holon is composed of modular CMake scripts:
+Xoion is composed of modular CMake scripts:
 
-- `holon_main.cmake` — loading and dependency resolution
-- `holon_utils.cmake` — utility functions
-- `holon_logout.cmake` — debugging and introspection output
+- `xoion_main.cmake` — loading and dependency resolution
+- `xoion_utils.cmake` — utility functions
+- `xoion_logout.cmake` — debugging and introspection output
 - `arrays.cmake` — array utils
 - `reduced_toml_parser.cmake` — TOML parser in CMake
 
